@@ -49,4 +49,10 @@ public class StudentController {
         return new ResponseEntity<>("record updated successfully", HttpStatus.OK);
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteStudentById(@PathVariable("id") int studId) {
+        studentService.deleteStudentById(studId);
+        return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
+    }
+
 }

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <title>Campus Desk</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+<main class="shell">
+    <header class="topbar">
+        <a class="brand" href="#" aria-label="Campus Desk home">
+            <span class="brand-mark">C</span>
+            <span>campus<span class="brand-light">desk</span></span>
+        </a>
+        <span class="connection"><span class="status-dot"></span> Connected to your API</span>
+    </header>
+
+    <section class="welcome">
+        <div>
+            <p class="eyebrow">CAMPUS OVERVIEW</p>
+            <h1>Keep your campus in order.</h1>
+            <p class="subtitle">Manage students and departments from one simple workspace.</p>
+        </div>
+        <button class="button button-primary" id="add-record" type="button">＋ <span>Add student</span></button>
+    </section>
+
+    <section class="stats" aria-label="Campus summary">
+        <article class="stat-card">
+            <span class="stat-icon student-icon">S</span>
+            <div><p>Total students</p><strong id="student-count">—</strong></div>
+            <span class="stat-note">registered</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-icon dept-icon">D</span>
+            <div><p>Departments</p><strong id="department-count">—</strong></div>
+            <span class="stat-note">on campus</span>
+        </article>
+    </section>
+
+    <section class="workspace">
+        <div class="workspace-heading">
+            <div>
+                <h2>Directory</h2>
+                <p class="subtitle">Browse and manage campus records.</p>
+            </div>
+            <label class="search-box">
+                <span aria-hidden="true">⌕</span>
+                <input id="search" type="search" placeholder="Search this list…" autocomplete="off">
+            </label>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Directory type">
+            <button class="tab active" id="students-tab" role="tab" aria-selected="true" type="button">Students</button>
+            <button class="tab" id="departments-tab" role="tab" aria-selected="false" type="button">Departments</button>
+        </div>
+
+        <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+        <div class="table-wrap">
+            <table>
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+        <p class="table-footer" id="table-footer"></p>
+    </section>
+
+    <footer>Campus Desk <span>·</span> Student &amp; department management</footer>
+</main>
+
+<dialog id="record-dialog" aria-labelledby="dialog-title">
+    <form id="record-form">
+        <div class="dialog-heading">
+            <div>
+                <p class="eyebrow" id="dialog-eyebrow">NEW RECORD</p>
+                <h2 id="dialog-title">Add student</h2>
+            </div>
+            <button class="icon-button" id="close-dialog" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <div id="form-fields"></div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+            <button class="button button-secondary" id="cancel-dialog" type="button">Cancel</button>
+            <button class="button button-primary" id="save-record" type="submit">Save record</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="details-dialog" aria-labelledby="details-title">
+    <div class="dialog-heading">
+        <div>
+            <p class="eyebrow">RECORD DETAILS</p>
+            <h2 id="details-title">Details</h2>
+        </div>
+        <button class="icon-button" id="close-details" type="button" aria-label="Close dialog">×</button>
+    </div>
+    <div id="details-content" class="details-content"></div>
+</dialog>
+</body>
+</html>
