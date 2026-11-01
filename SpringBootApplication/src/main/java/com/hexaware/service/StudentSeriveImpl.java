@@ -1,24 +1,30 @@
 package com.hexaware.service;
 
 
+import com.hexaware.entity.Department;
 import com.hexaware.entity.Student;
+import com.hexaware.repository.DepartmentRepository;
 import com.hexaware.repository.StudentRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StudentSeriveImpl implements StudentService {
 
     private StudentRepository studentRepo;
+    private DepartmentRepository departmentRepo;
 
-    public StudentSeriveImpl(StudentRepository studentRepo) {
+    public StudentSeriveImpl(StudentRepository studentRepo, DepartmentRepository departmentRepo) {
         this.studentRepo = studentRepo;
+        this.departmentRepo = departmentRepo;
     }
 
     @Override
     public Student createUser(Student stud) {
+        stud.setDept(findDepartment(stud));
         return studentRepo.save(stud);
     }
 
@@ -28,11 +34,11 @@ public class StudentSeriveImpl implements StudentService {
     }
 
 
-    // to get the information from the table by using an id , we need two methods i.e findById() and get().
     @Override
     public Student getStudentById(int studId) {
-        Optional<Student> studentId = studentRepo.findById(studId);
-        return studentId.get();
+        return studentRepo.findById(studId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Student not found with id: " + studId));
     }
 
     @Override
@@ -43,15 +49,24 @@ public class StudentSeriveImpl implements StudentService {
     @Override
     public void updateStudentById(int studId, Student studentDetails) {
         Student existingStudent = studentRepo.findById(studId)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + studId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Student not found with id: " + studId));
 
-        // update only necessary fields
         existingStudent.setStudentName(studentDetails.getStudentName());
         existingStudent.setStudentAge(studentDetails.getStudentAge());
-        existingStudent.setDept(studentDetails.getDept());
+        existingStudent.setDept(findDepartment(studentDetails));
 
         studentRepo.save(existingStudent);
     }
+
+    private Department findDepartment(Student student) {
+        if (student.getDept() == null || student.getDept().getId() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A valid department is required");
+        }
+
+        int departmentId = student.getDept().getId();
+        return departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Department not found with id: " + departmentId));
+    }
 }
-
-

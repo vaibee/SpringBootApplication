@@ -43,7 +43,7 @@ cd .\SpringBootApplication
 
 When Spring Boot has started, open **http://localhost:8080/** in your browser. Keep the terminal open while using the app. Stop the application with **Ctrl+C**.
 
-The page calls the API on the same server, so you do not need to configure a separate API address.
+The simplest option is to open `http://localhost:8080/`, which serves the page and API from the same origin. For local development servers on `localhost` or `127.0.0.1`, the API also allows browser requests from local origins.
 
 ## Use the web page
 
@@ -105,5 +105,5 @@ From the `SpringBootApplication` folder, run:
 
 - **The app does not start:** Confirm that Java 17 or newer is installed. Check the terminal output for the specific startup error.
 - **Database connection error:** Confirm MySQL is running, the `springbootdatabase` database exists, and the username/password in `application.properties` are correct.
-- **The page cannot load records:** Make sure Spring Boot started successfully and visit the page at `http://localhost:8080/`.
+- **The page cannot load or save records:** Make sure Spring Boot started successfully and visit the page at `http://localhost:8080/` (not through a separate static-file server such as VS Code Live Server). After changing backend code, stop and restart Spring Boot so the running app uses the latest API routes.
 - **A student cannot be created:** Create a department first and select its ID.

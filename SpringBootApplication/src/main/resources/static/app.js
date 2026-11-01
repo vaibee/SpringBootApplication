@@ -1,5 +1,12 @@
-const studentApi = "/api/student";
-const departmentApi = "/api/dept";
+const apiOrigin = (() => {
+    const pageUrl = new URL(window.location.href);
+    if (pageUrl.hostname === "localhost" || pageUrl.hostname === "127.0.0.1" || pageUrl.protocol === "file:") {
+        return `http://${pageUrl.hostname === "127.0.0.1" ? "127.0.0.1" : "localhost"}:8080`;
+    }
+    return window.location.origin;
+})();
+const studentApi = `${apiOrigin}/api/student`;
+const departmentApi = `${apiOrigin}/api/dept`;
 
 const state = {
     activeTab: "students",
@@ -17,16 +24,36 @@ const detailsDialog = document.querySelector("#details-dialog");
 const recordForm = document.querySelector("#record-form");
 
 async function request(path, options = {}) {
-    const response = await fetch(path, {
-        ...options,
-        headers: {
-            ...(options.body ? { "Content-Type": "application/json" } : {}),
-            ...options.headers
-        }
-    });
+    const method = (options.method || "GET").toUpperCase();
+    const url = new URL(path, window.location.href);
+    let response;
+    try {
+        response = await fetch(path, {
+            ...options,
+            headers: {
+                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...options.headers
+            }
+        });
+    } catch (error) {
+        throw new Error(
+            `${method} ${url.href} could not be read by the browser. If the page uses a different local port, restart Spring Boot to enable local CORS. (${error.message})`
+        );
+    }
     const body = await response.text();
     if (!response.ok) {
-        throw new Error(body || `${response.status} ${response.statusText}`);
+        let detail = body;
+        if (response.headers.get("content-type")?.includes("application/json") && body) {
+            try {
+                const errorBody = JSON.parse(body);
+                detail = errorBody.detail || errorBody.message || errorBody.title || body;
+            } catch {
+                detail = body;
+            }
+        } else if (response.headers.get("content-type")?.includes("text/html")) {
+            detail = "server returned an HTML error page; check that the page and API are served by the Spring Boot app";
+        }
+        throw new Error(`${method} ${url.href} failed (${response.status}): ${detail || response.statusText}`);
     }
     if (!body) return null;
     try {
